@@ -155,6 +155,10 @@ builder.defineCatalogHandler(function(args, cb) {
 	  		}
 	  	});
 
+	  	torrent_obj = Object.values(torrent_obj).filter((obj => {
+	  		return !Object.values(obj).some(e => e === undefined);
+	  	}));
+
   		return Object.values(torrent_obj).sort(compare).map((obj) => {
   			return {
 		  		id: obj.torrent_id,
