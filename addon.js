@@ -93,8 +93,10 @@ builder.defineStreamHandler(function(args) {
     	return rutracker.login({ username: process.env.RUTRACKER_USER, password: process.env.RUTRACKER_PWD })
 		  .then(() => rutracker.getMagnetLink(args.id))
 		  .then(magnet => {
+		  	let title_split = t.title.split(/\/|\[/);
+            		let idx = title_split.findIndex(e => /\d+\.\d+\.\d+/.test(e));
 		  	let t = dataset.filter(e => e.id == args.id)[0];
-		  	let title = t.title.split(/\/|\[/).slice(2,4).join();
+		  	let title = t.title.split(/\/|\[/).slice(idx, idx + 2).join();
 		  	let seeds = t.seeds;
 		  	let leeches = t.leeches;
 		  	let size = (t.size / 1000000000).toFixed(2) + ' GB'
@@ -137,12 +139,13 @@ builder.defineCatalogHandler(function(args, cb) {
 	  	torrent_obj = {};
 	  	torrents.forEach(function(torrent) {
 	  		let title_split = torrent.title.split(/\/|\[/);
-	  		let team_names = title_split[3].split('@').map((t) => {
+            		let idx = title_split.findIndex(e => /\d+\.\d+\.\d+/.test(e));
+	  		let team_names = title_split[idx + 1].split('@').map((t) => {
 	  			let str_arr = t.trim().toLowerCase().split(' ');
 	  			let team_key = str_arr[str_arr.length - 1];
 	  			return teams[team_key];
 	  		});
-	  		let game_date = title_split[2].trim();
+	  		let game_date = title_split[idx].trim();
 	  		let key = [team_names[0], team_names[1], game_date].join('_');
 	  		if (!(torrent_obj[key] && torrent_obj[key].seeds > torrent.seeds)) {	  			
 		  		torrent_obj[key] = {
@@ -176,15 +179,16 @@ builder.defineMetaHandler(function(args) {
 	let t = dataset.filter(e => e.id == args.id)[0];
 
     if (t) {        
-  		let title_split = t.title.split(/\/|\[/);
-  		let team_names = title_split[3].split('@').map((t) => {
-  			let str_arr = t.trim().toLowerCase().split(' ');
-  			let team_key = str_arr[str_arr.length - 1];
-  			return teams[team_key];
-  		});
+  	let title_split = t.title.split(/\/|\[/);
+        let idx = title_split.findIndex(e => /\d+\.\d+\.\d+/.test(e));
+	let team_names = title_split[idx + 1].split('@').map((t) => {
+		let str_arr = t.trim().toLowerCase().split(' ');
+		let team_key = str_arr[str_arr.length - 1];
+		return teams[team_key];
+	});
         const metaObj = {
             id: args.id,
-            name: title_split.slice(2,4).join(),
+            name: title_split.slice(idx, idx + 2).join(),
             releaseInfo: '2024',
             poster: `${LOGO_API_URL}/vertical_logo/${team_names[0]}/${team_names[1]}`,
             background: `${LOGO_API_URL}/horizontal_logo/${team_names[0]}/${team_names[1]}`,
