@@ -93,10 +93,10 @@ builder.defineStreamHandler(function(args) {
     	return rutracker.login({ username: process.env.RUTRACKER_USER, password: process.env.RUTRACKER_PWD })
 		  .then(() => rutracker.getMagnetLink(args.id))
 		  .then(magnet => {
+		  	let t = dataset.filter(e => e.id == args.id)[0];
 		  	let title_split = t.title.split(/\/|\[/);
             		let idx = title_split.findIndex(e => /\d+\.\d+\.\d+/.test(e));
-		  	let t = dataset.filter(e => e.id == args.id)[0];
-		  	let title = t.title.split(/\/|\[/).slice(idx, idx + 2).join();
+		  	let title = title_split.slice(idx, idx + 2).join();
 		  	let seeds = t.seeds;
 		  	let leeches = t.leeches;
 		  	let size = (t.size / 1000000000).toFixed(2) + ' GB'
