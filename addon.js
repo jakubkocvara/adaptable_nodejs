@@ -94,7 +94,7 @@ builder.defineStreamHandler(function(args) {
 		  .then(() => rutracker.getMagnetLink(args.id))
 		  .then(magnet => {
 		  	let t = dataset.filter(e => e.id == args.id)[0];
-		  	let title_split = t.title.split(/\/|\[/);
+		  	let title_split = t.title.replace(/[{}]/g, '').split(/\/|\[/);
             		let idx = title_split.findIndex(e => /\d+\.\d+\.\d+/.test(e));
 		  	let title = title_split.slice(idx, idx + 2).join();
 		  	let seeds = t.seeds;
@@ -129,7 +129,7 @@ function compare( a, b ) {
 builder.defineCatalogHandler(function(args, cb) {
 
     // return Promise.resolve({ metas: metas })
-    return rutracker.login({ username: 'vonbahnhofk2', password: 'matrix123' })
+    return rutracker.login({ username: process.env.RUTRACKER_USER, password: process.env.RUTRACKER_PWD })
 	  .then(() => rutracker.search({ query: 'nba', sort: 'seeds' }))
 	  .then(function(torrents) {
 	  	dataset = torrents.filter(e => e.category.includes('NBA'));
@@ -138,7 +138,7 @@ builder.defineCatalogHandler(function(args, cb) {
 	  }).then(function(torrents) {
 	  	torrent_obj = {};
 	  	torrents.forEach(function(torrent) {
-	  		let title_split = torrent.title.split(/\/|\[/);
+	  		let title_split = torrent.title.replace(/[{}]/g, '').split(/\/|\[/);
             		let idx = title_split.findIndex(e => /\d+\.\d+\.\d+/.test(e));
 	  		let team_names = title_split[idx + 1].split('@').map((t) => {
 	  			let str_arr = t.trim().toLowerCase().split(' ');
@@ -179,7 +179,7 @@ builder.defineMetaHandler(function(args) {
 	let t = dataset.filter(e => e.id == args.id)[0];
 
     if (t) {        
-  	let title_split = t.title.split(/\/|\[/);
+  	let title_split = t.title.replace(/[{}]/g, '').split(/\/|\[/);
         let idx = title_split.findIndex(e => /\d+\.\d+\.\d+/.test(e));
 	let team_names = title_split[idx + 1].split('@').map((t) => {
 		let str_arr = t.trim().toLowerCase().split(' ');
