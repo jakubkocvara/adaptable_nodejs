@@ -109,7 +109,7 @@ builder.defineStreamHandler(function(args) {
     }
 })
 
-const LOGO_API_URL = "https://jakubkocvara-python.adaptable.app"
+const LOGO_API_URL = "https://adaptable-python-production.up.railway.app"
 function reverseDate(x) {
 	return x.split('.').reverse().join();
 }
